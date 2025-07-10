@@ -1,0 +1,27 @@
+[project]
+name = "pg-mcp"
+version = "0.1.0"
+description = "Postgres MCP"
+
+authors = [{"name"  = "Mai Thành Duy An", "email"="tiachop0102@gmail.com"}]
+
+requires-python= ">=3.12"
+
+dependencies = [
+    "requests",
+    "fastapi[all]",
+    "uvicorn",
+    "mcp",
+    "PyJWT",
+    "aiohttp",
+]
+
+[project.scripts]
+pg-mcp="app.main:main"
+
+[tool.setuptools]
+packages = ["app"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
