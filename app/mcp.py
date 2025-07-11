@@ -13,6 +13,7 @@ from app.logger import get_logger
 import json
 import asyncio
 from datetime import datetime, date
+from decimal import Decimal
 
 # Import real PostgreSQL service only
 from app.postgres_service import postgres_service as real_postgres_service
@@ -248,11 +249,13 @@ class PostgreSQLMCPServer:
                         if result["data"]:
                             # Show first 10 rows
                             for i, row in enumerate(result["data"][:10]):
-                                # Convert any datetime objects to strings for JSON serialization
+                                # Convert any datetime/decimal objects to strings for JSON serialization
                                 serializable_row = {}
                                 for k, v in row.items():
                                     if isinstance(v, (datetime, date)):
                                         serializable_row[k] = v.isoformat()
+                                    elif isinstance(v, Decimal):
+                                        serializable_row[k] = str(v)
                                     else:
                                         serializable_row[k] = v
                                 output += f"Row {i+1}: {json.dumps(serializable_row, indent=2, ensure_ascii=False)}\n"
