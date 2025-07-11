@@ -1,3 +1,5 @@
+[![Docker Image CI](https://github.com/maithanhduyan/pg-mcp/actions/workflows/docker-image.yml/badge.svg)](https://github.com/maithanhduyan/pg-mcp/actions/workflows/docker-image.yml)
+
 # PostgreSQL Model Context Protocol (MCP) Server
 
 A comprehensive **Model Context Protocol (MCP) Server** built with **FastAPI** that provides full PostgreSQL database operations through a standardized JSON-RPC 2.0 interface. This server can be integrated with VS Code and other MCP-compatible tools for seamless database management.
