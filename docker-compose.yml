@@ -18,3 +18,37 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - pg-mcp-network
+
+  pg-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pg-mcp-server
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=pgrag
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres#2025
+      - HOST=0.0.0.0
+      - PORT=8000
+      - PGMCP_API_KEY=pg-mcp-key-2025-super-secure-token
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - pg-mcp-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  pg-mcp-network:
+    driver: bridge
