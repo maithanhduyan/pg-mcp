@@ -9,7 +9,7 @@ POSTGRES_DB_CONFIG = {
     "user": os.getenv("POSTGRES_USER", "postgres"),
     "password": os.getenv("POSTGRES_PASSWORD", "postgres#2025"),
     "host": os.getenv("POSTGRES_HOST", "localhost"),
-    "port": os.getenv("POSTGRES_PORT", "5432"),
+    "port": int(os.getenv("POSTGRES_PORT", "5432")) if os.getenv("POSTGRES_PORT", "5432").isdigit() else 5432,
 }
 
 SQLITE_DB_CONFIG = {
@@ -25,7 +25,7 @@ SQLITE_DB_CONFIG = {
 JWT_SECRET_KEY= os.getenv("JWT_SECRET_KEY","your-super-secret-jwt-key-change-in-production")
 
 # MCP API Key for VS Code integration
-ASSISTANT_API_KEY= os.getenv("PGMCP_API_KEY", "pg-mcp-key-2025-super-secure-token")
+PGMCP_API_KEY= os.getenv("PGMCP_API_KEY", "pg-mcp-key-2025-super-secure-token")
 
 # Default database path for SQLite
 DB_PATH= os.getenv("DB_PATH", "pg_mcp.db")

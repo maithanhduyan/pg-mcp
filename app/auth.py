@@ -38,7 +38,7 @@ async def verify_mcp_api_key(x_api_key: Optional[str] = Header(None)) -> bool:
     if not x_api_key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing API key. Please provide X-API-Key header.",
+            detail="Missing API key. Please provide MCP-API-Key header.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     

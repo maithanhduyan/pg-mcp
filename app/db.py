@@ -5,10 +5,9 @@ import hashlib
 import os
 from typing import Optional, Dict, Any
 from app.logger import get_logger
+from app.config import DB_PATH
 
 logger = get_logger(__name__)
-
-DB_PATH = "assistant.db"
 
 
 def get_db_connection():

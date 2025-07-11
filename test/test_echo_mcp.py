@@ -8,6 +8,7 @@ Tests the JSON-RPC 2.0 implementation
 import asyncio
 import json
 import aiohttp
+import pytest
 from typing import Dict, Any
 
 
@@ -78,6 +79,7 @@ class MCPClient:
         return await self.call_tool("echo", {"message": message})
 
 
+@pytest.mark.asyncio
 async def test_mcp_server():
     """Test the Echo MCP Server"""
     

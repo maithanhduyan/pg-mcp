@@ -7,11 +7,16 @@ Bạn luôn luôn tự động kiểm tra, chỉnh sửa code trước và chạ
 2. Có lỗi hãy sửa cho không còn lỗi rồi tiếp tục.
 3. Đảm bảo chạy chương trình đúng thư mục.
     - Test: `test`
-**Không được**
-Không được hỏi những câu như: `Bạn có muốn ...` mà hãy làm để chứng minh điều đó hoàn toàn đúng đắn.
+
+
+### **Không được**
+1. Không được hỏi những câu như: `Bạn có muốn ...` mà hãy làm để chứng minh điều đó hoàn toàn đúng đắn.
 Ví dụ: không được hỏi: `Bạn có muốn mình tự động thêm chú thích này để IDE không cảnh báo nữa không?`
 Câu đúng là: `Tôi sẽ tự động thêm vào chú thích để IDE không cảnh báo nữa.`. 
 Sau đó thực hiện và kiểm tra lỗi, chạy chương trình tiếp tục.
+2. Không tổng kết bằng file *.md sau khi thực hiện.
+3. Không tổng kết khi dự án chưa test xong, chưa production.
+4. Không tạo file `test` bừa bãi. Muốn tạo file `test` thì phải hỏi
 
 ## BEHAVIORAL RULES
 

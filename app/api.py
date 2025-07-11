@@ -4,9 +4,9 @@ from fastapi import FastAPI, APIRouter
 router = APIRouter()
 
 @router.get("/")
-def health_check():
-    """Home endpoint for the application."""
-    return {"status": "ok", "message": "Welcome to the Assistant Service!"}
+def api_root():
+    """API root endpoint for the application."""
+    return {"status": "ok", "message": "Welcome to the Postgres MCP Service!"}
 
 @router.get("/health")
 def health_check():

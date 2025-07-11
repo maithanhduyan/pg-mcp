@@ -1,249 +1,271 @@
-# Echo MCP Server
+# PostgreSQL Model Context Protocol (MCP) Server
 
-Một ứng dụng Echo Server sử dụng Model Context Protocol (MCP) với JSON-RPC 2.0 để tích hợp với VS Code.
+A comprehensive **Model Context Protocol (MCP) Server** built with **FastAPI** that provides full PostgreSQL database operations through a standardized JSON-RPC 2.0 interface. This server can be integrated with VS Code and other MCP-compatible tools for seamless database management.
 
-## Tính năng
+## Features
 
-- ✅ Tuân thủ chuẩn JSON-RPC 2.0
-- ✅ Hỗ trợ MCP protocol version 2024-11-05
-- ✅ Echo tool để phản hồi lại tin nhắn
-- ✅ Authentication với API Key
-- ✅ Logging chi tiết
-- ✅ Hỗ trợ Unicode/tiếng Việt
-- ✅ Error handling đầy đủ
+### 🚀 Core MCP Functionality
+- **JSON-RPC 2.0** compliant API
+- **VS Code integration** ready
+- **Authentication** with API key
+- **Comprehensive error handling**
+- **Auto-fallback** to mock service when PostgreSQL is unavailable
 
-## Cài đặt
+### 🗄️ PostgreSQL Operations
+#### Basic Operations
+- **Connection Testing** - Test database connectivity and get server info
+- **Query Execution** - Execute any SQL query (SELECT, INSERT, UPDATE, DELETE, etc.)
+- **Schema Information** - Get complete database schema with tables and columns
+- **Table Information** - Detailed table metadata, columns, indexes, and row counts
 
-1. Clone repository:
+#### Advanced Operations
+- **Query Performance Analysis** - EXPLAIN ANALYZE for query optimization
+- **Database Size Information** - Database and table size statistics
+- **Table Statistics** - Column statistics, null fractions, distinct values
+- **Active Connections** - Monitor current database connections
+- **Locks Information** - View database locks and blocking queries
+- **Slow Queries Analysis** - Identify performance bottlenecks (requires pg_stat_statements)
+
+#### Administrative Operations
+- **Table Backup** - Create table copies with or without data
+- **Index Creation** - Create indexes on tables (regular or unique)
+- **Table Optimization** - VACUUM and ANALYZE tables for performance
+
+#### Utility Operations
+- **Echo Tool** - Simple echo for testing connectivity
+
+## Available Tools
+
+| Tool Name | Description | Parameters |
+|-----------|-------------|------------|
+| `echo` | Echo back input message | `message` (string) |
+| `postgres_connection_test` | Test PostgreSQL connection | None |
+| `postgres_query` | Execute SQL query | `query` (string), `params` (array, optional) |
+| `postgres_schema` | Get database schema | None |
+| `postgres_table_info` | Get table information | `table_name` (string), `schema` (string, default: "public") |
+| `postgres_query_analyze` | Analyze query performance | `query` (string) |
+| `postgres_database_size` | Get database size info | None |
+| `postgres_table_stats` | Get table statistics | `table_name` (string), `schema` (string, default: "public") |
+| `postgres_active_connections` | Get active connections | None |
+| `postgres_backup_table` | Backup table | `source_table` (string), `backup_table` (string), `schema` (string), `include_data` (boolean) |
+| `postgres_create_index` | Create table index | `table_name` (string), `column_names` (array), `index_name` (string, optional), `schema` (string), `unique` (boolean) |
+| `postgres_slow_queries` | Get slow queries | `limit` (integer, default: 10) |
+| `postgres_optimize_table` | Optimize table | `table_name` (string), `schema` (string, default: "public") |
+| `postgres_locks_info` | Get database locks | None |
+
+## Installation
+
+1. **Clone the repository:**
 ```bash
 git clone <repository-url>
 cd pg-mcp
 ```
 
-2. Cài đặt dependencies:
+2. **Install dependencies:**
 ```bash
-uv sync
-# hoặc
+pip install -r requirements.txt
+# or using pyproject.toml
 pip install -e .
 ```
 
-## Chạy Server
+3. **Configure PostgreSQL connection:**
+Edit `app/config.py` with your PostgreSQL settings:
+```python
+POSTGRES_DB_CONFIG = {
+    "host": "localhost",
+    "port": "5432", 
+    "dbname": "your_database",
+    "user": "your_username",
+    "password": "your_password"
+}
+```
 
+4. **Set API key:**
+Update `MCP_API_KEY` in `app/config.py` or set environment variable.
+
+## Usage
+
+### Start the Server
 ```bash
-# Sử dụng Python module
-python -m app.main
+# Development
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-# Hoặc sử dụng script entry point
-pg-mcp
-
-# Hoặc với uvicorn trực tiếp
+# Production
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-Server sẽ chạy tại: `http://localhost:8000`
+### VS Code Integration
 
-## Cấu hình VS Code
-
-1. Tạo file `.vscode/mcp.json`:
+1. **Install MCP extension** in VS Code
+2. **Configure MCP settings** in `.vscode/mcp.json`:
 ```json
 {
-    "servers": {
-        "pg_mcp": {
-            "url": "http://localhost:8000/mcp",
-            "headers": {
-                "X-API-Key": "pg-mcp-key-2025-super-secure-token"
-            }
-        }
+  "mcpServers": {
+    "postgres-mcp": {
+      "name": "PostgreSQL MCP Server",
+      "url": "http://localhost:8000/mcp",
+      "apiKey": "your-secret-mcp-api-key"
     }
+  }
 }
 ```
 
-2. Cài đặt MCP extension trong VS Code (nếu có).
+### Direct API Usage
 
-## API Endpoints
-
-### GET /
-Root endpoint trả về thông tin cơ bản.
-
-### GET /mcp
-Endpoint chính cho MCP, trả về thông tin server.
-
-### POST /mcp
-Endpoint xử lý JSON-RPC 2.0 requests.
-
-## JSON-RPC Methods
-
-### initialize
-Khởi tạo kết nối MCP.
-
-**Request:**
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "initialize",
-    "params": {
-        "protocol_version": "2024-11-05",
-        "client_info": {
-            "name": "vscode",
-            "version": "1.0.0"
-        }
-    },
-    "id": 1
-}
+**Test connection:**
+```bash
+curl -X GET http://localhost:8000/mcp \
+  -H "Authorization: Bearer your-secret-mcp-api-key"
 ```
 
-**Response:**
-```json
-{
+**Execute query:**
+```bash
+curl -X POST http://localhost:8000/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secret-mcp-api-key" \
+  -d '{
     "jsonrpc": "2.0",
-    "result": {
-        "protocol_version": "2024-11-05",
-        "capabilities": {
-            "tools": {"listChanged": false},
-            "resources": {"listChanged": false}
-        },
-        "server_info": {
-            "name": "echo-mcp-server",
-            "version": "1.0.0"
-        }
-    },
-    "id": 1
-}
-```
-
-### tools/list
-Liệt kê các tools có sẵn.
-
-**Request:**
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "tools/list",
-    "id": 2
-}
-```
-
-**Response:**
-```json
-{
-    "jsonrpc": "2.0",
-    "result": {
-        "tools": [
-            {
-                "name": "echo",
-                "description": "Echo back the input message",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "message": {
-                            "type": "string",
-                            "description": "Message to echo back"
-                        }
-                    },
-                    "required": ["message"]
-                }
-            }
-        ]
-    },
-    "id": 2
-}
-```
-
-### tools/call
-Gọi một tool cụ thể.
-
-**Request:**
-```json
-{
-    "jsonrpc": "2.0",
+    "id": 1,
     "method": "tools/call",
     "params": {
-        "name": "echo",
-        "arguments": {
-            "message": "Hello, World!"
-        }
-    },
-    "id": 3
-}
-```
-
-**Response:**
-```json
-{
-    "jsonrpc": "2.0",
-    "result": {
-        "content": [
-            {
-                "type": "text",
-                "text": "Echo: Hello, World!"
-            }
-        ],
-        "isError": false
-    },
-    "id": 3
-}
+      "name": "postgres_query",
+      "arguments": {
+        "query": "SELECT version()"
+      }
+    }
+  }'
 ```
 
 ## Testing
 
-Chạy test script để kiểm tra server:
-
+### Comprehensive Test Suite
 ```bash
-python test_echo_mcp.py
+# Run unit tests
+pytest test/
+
+# Run comprehensive integration test
+python test_postgres_mcp_comprehensive.py
 ```
 
-Test sẽ kiểm tra:
-- ✅ Initialize connection
-- ✅ List tools
-- ✅ Echo tool với các message khác nhau
-- ✅ Error handling cho invalid tools
-
-## Configuration
-
-### Environment Variables
-
-- `HOST`: Host để bind server (default: 0.0.0.0)
-- `PORT`: Port để bind server (default: 8000)
-- `PGMCP_API_KEY`: API key cho authentication (default: pg-mcp-key-2025-super-secure-token)
-- `JWT_SECRET_KEY`: Secret key cho JWT tokens
-- `DB_PATH`: Đường dẫn đến SQLite database
-
-### Security
-
-Server yêu cầu API key trong header `X-API-Key` cho tất cả requests đến `/mcp` endpoints.
-
-Default API key: `pg-mcp-key-2025-super-secure-token`
-
-**⚠️ Lưu ý:** Thay đổi API key trong production environment!
+### Individual Tool Testing
+```bash
+# Test specific functionality
+python test_postgres_mcp.py
+```
 
 ## Architecture
 
 ```
 pg-mcp/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py          # FastAPI app và entry point
-│   ├── mcp.py           # Echo MCP Server implementation
-│   ├── json_rpc.py      # JSON-RPC 2.0 models
-│   ├── auth.py          # Authentication và API key
-│   ├── db.py            # Database operations
-│   ├── logger.py        # Logging configuration
-│   ├── api.py           # Additional API endpoints
-│   └── config.py        # Configuration
+│   ├── main.py              # FastAPI application entry point
+│   ├── mcp.py               # MCP server implementation
+│   ├── postgres_service.py  # PostgreSQL service layer
+│   ├── postgres_mock.py     # Mock service for testing
+│   ├── json_rpc.py          # JSON-RPC 2.0 implementation
+│   ├── auth.py              # Authentication middleware
+│   ├── config.py            # Configuration settings
+│   └── logger.py            # Logging configuration
+├── test/                    # Test files
 ├── .vscode/
-│   └── mcp.json         # VS Code MCP configuration
-├── test_echo_mcp.py     # Test client
-├── pyproject.toml       # Project configuration
-└── README.md
+│   └── mcp.json            # VS Code MCP configuration
+└── pyproject.toml          # Project dependencies
+```
+
+## Key Features
+
+### 🔒 Security
+- **API key authentication** for all requests
+- **SQL injection protection** through parameterized queries
+- **Error sanitization** to prevent information leakage
+
+### 🚀 Performance
+- **Connection pooling** for database connections
+- **Async/await** support throughout
+- **Query optimization** tools and analysis
+
+### 🛠️ Development
+- **Auto-reload** support for development
+- **Comprehensive logging** for debugging
+- **Mock service** for testing without real database
+- **Type hints** throughout codebase
+
+### 🔧 Reliability
+- **Automatic fallback** to mock service
+- **Comprehensive error handling**
+- **Connection retry logic**
+- **Graceful degradation**
+
+## Examples
+
+### Query Execution
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "postgres_query",
+    "arguments": {
+      "query": "SELECT * FROM users WHERE active = $1",
+      "params": ["true"]
+    }
+  }
+}
+```
+
+### Table Backup
+```json
+{
+  "jsonrpc": "2.0", 
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "postgres_backup_table",
+    "arguments": {
+      "source_table": "users",
+      "backup_table": "users_backup_20240115",
+      "schema": "public",
+      "include_data": true
+    }
+  }
+}
+```
+
+### Index Creation
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3, 
+  "method": "tools/call",
+  "params": {
+    "name": "postgres_create_index",
+    "arguments": {
+      "table_name": "users",
+      "column_names": ["email", "status"], 
+      "index_name": "idx_users_email_status",
+      "unique": false
+    }
+  }
+}
 ```
 
 ## Contributing
 
-1. Fork repository
-2. Tạo feature branch
-3. Commit changes
-4. Push và tạo Pull Request
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
 
 ## License
 
-MIT License - xem file LICENSE để biết thêm chi tiết.
+MIT License - see LICENSE file for details.
+
+## Support
+
+For issues and questions:
+- Create an issue on GitHub
+- Check the test files for usage examples
+- Review the comprehensive test suite for full API coverage
